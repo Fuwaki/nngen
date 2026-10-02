@@ -44,12 +44,15 @@ class scaled_add(bt._ElementwiseOperator):
         b_point = self.args[1].get_op_point()
         b_signed = self.args[1].get_signed()
 
+        # NOTE(local fix): the scale control parameter can be wider than the input
+        # datawidth (quantizer produces up to 32-bit scales). Casting it to the input
+        # width (e.g. 8 bit) truncated the scale in HW while ng.eval used the full value.
         a_scale = strm.ReinterpretCast(self.a_scale_cparam,
-                                       width=a_datawidth,
-                                       signed=a_signed)
+                                       width=max(a_datawidth, self.a_scale_cparam.width + 1),
+                                       signed=True)
         b_scale = strm.ReinterpretCast(self.b_scale_cparam,
-                                       width=b_datawidth,
-                                       signed=b_signed)
+                                       width=max(b_datawidth, self.b_scale_cparam.width + 1),
+                                       signed=True)
 
         mul = strm.Times(args[0], a_scale)
 

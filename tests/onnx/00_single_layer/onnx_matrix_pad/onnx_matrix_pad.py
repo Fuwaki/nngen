@@ -104,7 +104,7 @@ def run(act_shape=(1, 7, 7, 3),
         model_input = np.transpose(model_input, act.reversed_perm)
 
     model.eval()
-    model_out = model(torch.from_numpy(model_input)).detach().numpy()
+    model_out = model(torch.from_numpy(np.ascontiguousarray(model_input))).detach().numpy()
     if act.perm is not None:
         model_out = np.transpose(model_out, act.perm)
     scaled_model_out = model_out * out.scale_factor

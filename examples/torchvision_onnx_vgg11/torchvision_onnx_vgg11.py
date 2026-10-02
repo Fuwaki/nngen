@@ -135,7 +135,7 @@ def run(act_dtype=ng.int8, weight_dtype=ng.int8,
         model_input = np.transpose(model_input, act.reversed_perm)
 
     model.eval()
-    model_out = model(torch.from_numpy(model_input)).detach().numpy()
+    model_out = model(torch.from_numpy(np.ascontiguousarray(model_input))).detach().numpy()
     if act.perm is not None and len(model_out.shape) == len(act.shape):
         model_out = np.transpose(model_out, act.perm)
     scaled_model_out = model_out * out.scale_factor
@@ -172,11 +172,11 @@ def run(act_dtype=ng.int8, weight_dtype=ng.int8,
                                    for layer in model_features_relu_layers]
     model_features_seqs = [model.features[:i + 1]
                            for i in model_features_relu_indexes]
-    model_features_outs = [seq(torch.from_numpy(model_input)).detach().numpy()
+    model_features_outs = [seq(torch.from_numpy(np.ascontiguousarray(model_input))).detach().numpy()
                            for seq in model_features_seqs]
 
     model_avgpool_out = nn.Sequential(model.features,
-                                      model.avgpool)(torch.from_numpy(model_input)).detach().numpy()
+                                      model.avgpool)(torch.from_numpy(np.ascontiguousarray(model_input))).detach().numpy()
 
     class Flatten(nn.Module):
         def forward(self, input):
@@ -189,7 +189,7 @@ def run(act_dtype=ng.int8, weight_dtype=ng.int8,
     model_classifier_relu_indexes.append(len(model.classifier))
     model_classifier_seqs = [nn.Sequential(model.features, model.avgpool, Flatten(), model.classifier[:i + 1])
                              for i in model_classifier_relu_indexes]
-    model_classifier_outs = [seq(torch.from_numpy(model_input)).detach().numpy()
+    model_classifier_outs = [seq(torch.from_numpy(np.ascontiguousarray(model_input))).detach().numpy()
                              for seq in model_classifier_seqs]
 
     model_outs = model_features_outs + [model_avgpool_out] + model_classifier_outs

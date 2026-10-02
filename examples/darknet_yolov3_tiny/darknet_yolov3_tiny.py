@@ -160,7 +160,7 @@ def run(act_dtype=ng.int16, weight_dtype=ng.int8,
         model_input = np.transpose(model_input, act.reversed_perm)
 
     model.eval()
-    model_rslts = model(torch.from_numpy(model_input))
+    model_rslts = model(torch.from_numpy(np.ascontiguousarray(model_input)))
     model_outs = [rslt.detach().numpy() for rslt in model_rslts]
     model_outs = [(np.transpose(model_out, act.perm)
                    if act.perm is not None and len(model_out.shape) == len(act.shape)
@@ -196,25 +196,25 @@ def run(act_dtype=ng.int16, weight_dtype=ng.int8,
     mouts = []
     # all Conv2d-LeakyReLU layers before YOLOLayer
     mouts.append(nn.Sequential(model.module_list[0])(
-        torch.from_numpy(model_input)).detach().numpy())
+        torch.from_numpy(np.ascontiguousarray(model_input))).detach().numpy())
     mouts.append(nn.Sequential(*model.module_list[0:3])(
-        torch.from_numpy(model_input)).detach().numpy())
+        torch.from_numpy(np.ascontiguousarray(model_input))).detach().numpy())
     mouts.append(nn.Sequential(*model.module_list[0:5])(
-        torch.from_numpy(model_input)).detach().numpy())
+        torch.from_numpy(np.ascontiguousarray(model_input))).detach().numpy())
     mouts.append(nn.Sequential(*model.module_list[0:7])(
-        torch.from_numpy(model_input)).detach().numpy())
+        torch.from_numpy(np.ascontiguousarray(model_input))).detach().numpy())
     mouts.append(nn.Sequential(*model.module_list[0:9])(
-        torch.from_numpy(model_input)).detach().numpy())
+        torch.from_numpy(np.ascontiguousarray(model_input))).detach().numpy())
     mouts.append(nn.Sequential(*model.module_list[0:11])(
-        torch.from_numpy(model_input)).detach().numpy())
+        torch.from_numpy(np.ascontiguousarray(model_input))).detach().numpy())
     mouts.append(nn.Sequential(*model.module_list[0:13])(
-        torch.from_numpy(model_input)).detach().numpy())
+        torch.from_numpy(np.ascontiguousarray(model_input))).detach().numpy())
     mouts.append(nn.Sequential(*model.module_list[0:14])(
-        torch.from_numpy(model_input)).detach().numpy())
+        torch.from_numpy(np.ascontiguousarray(model_input))).detach().numpy())
     mouts.append(nn.Sequential(*model.module_list[0:15])(
-        torch.from_numpy(model_input)).detach().numpy())
+        torch.from_numpy(np.ascontiguousarray(model_input))).detach().numpy())
     mouts.append(nn.Sequential(*model.module_list[0:16])(
-        torch.from_numpy(model_input)).detach().numpy())
+        torch.from_numpy(np.ascontiguousarray(model_input))).detach().numpy())
 
     scaled_mouts = [mout * scale_factor
                     for mout, scale_factor in zip(mouts, sub_scale_factors)]
