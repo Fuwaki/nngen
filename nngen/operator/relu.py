@@ -58,8 +58,18 @@ class relu6(relu):
         par: The number of parallel operations (optional).
     """
 
+    def get_max_val(self):
+        # 6.0 in the integer domain of the input (round(6 * scale_factor)),
+        # clamped to the maximum value of the input data type
+        max_val = int(round(6.0 * self.args[0].scale_factor))
+        dtype = self.args[0].dtype
+        if dtype is not None:
+            limit = (2 ** (dtype.width - 1) - 1) if dtype.signed else (2 ** dtype.width - 1)
+            max_val = min(max_val, limit)
+        return max_val
+
     def get_local_control_param_values(self):
-        return OrderedDict([('max_val', round(self.args[0].scale_factor) * 6)])
+        return OrderedDict([('max_val', self.get_max_val())])
 
     def op(self, strm, *args, **kwargs):
         return strm.Mux(args[0] > strm.Int(0),
@@ -73,5 +83,5 @@ class relu6(relu):
         method = getattr(verify, name, None)
         method = functools.partial(method,
                                    features_dtype=self.args[0].dtype,
-                                   features_scale_factor=round(self.args[0].scale_factor))
+                                   features_scale_factor=self.get_max_val() / 6.0)
         return method

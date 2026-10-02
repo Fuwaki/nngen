@@ -112,6 +112,17 @@ class _pool(bt._Operator):
     def get_pad_value(self, strm):
         raise NotImplementedError('not implemented')
 
+    def get_act_rams(self):
+        # the first (ksize_row * ksize_col) input RAMs hold the input activation window
+        num = self.ksize[-2] * self.ksize[-3]
+        return self.input_rams[:num]
+
+    def control_init_hook(self, fsm):
+        pass
+
+    def control_comp_hook(self, comp_fsm):
+        pass
+
     def attribute(self, par=None, value_ram_size=None, out_ram_size=None):
         if par is not None:
             if (par - 1) & par != 0:
@@ -188,11 +199,11 @@ class _pool(bt._Operator):
         def func(strm):
             ksize_col = self.ksize[-2]
             ksize_row = self.ksize[-3]
-            len_act_rams = len(self.input_rams)
+            len_act_rams = len(self.get_act_rams())
 
             mask = strm.parameter(datawidth=len_act_rams, signed=False)
 
-            act_rams = self.input_rams
+            act_rams = self.get_act_rams()
             out_ram = self.output_rams[0]
 
             # vec_act
@@ -444,7 +455,7 @@ class _pool(bt._Operator):
 
         self.stride_bat = 1
 
-        act_rams = self.input_rams
+        act_rams = self.get_act_rams()
         out_ram = self.output_rams[0]
 
         act_base_offset = self.m.Wire(self._name('act_base_offset'),
@@ -599,6 +610,9 @@ class _pool(bt._Operator):
         fsm(
             out_count(0)
         )
+
+        # hook for subclasses (e.g. depthwise_conv2d loads its parameters here)
+        self.control_init_hook(fsm)
 
         state_init = fsm.current
 
@@ -791,6 +805,13 @@ class _pool(bt._Operator):
             self.stream.set_source(comp_fsm, name, ram,
                                    local, self.stream_size)
             comp_fsm.set_index(comp_fsm.current - 1)
+
+        # hook for subclasses (extra stream sources / parameters)
+        # the act RAMs form a circular line buffer: physical RAM (y, x) holds the
+        # logical tap ((y - row_select) % ksize_row, (x - col_select) % ksize_col)
+        self.window_col_select = col_select
+        self.window_row_select = row_select_buf
+        self.control_comp_hook(comp_fsm)
 
         # set_sink
         name = list(self.stream.sinks.keys())[0]
