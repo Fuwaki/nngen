@@ -52,7 +52,7 @@ def Upsample(visitor, node):
 
     if len(srcs) > 1:
         factors = srcs[1]
-        if not isinstance(factors, (np.ndarray, np.float, np.int, float, int)):
+        if not isinstance(factors, (np.ndarray, np.floating, np.integer, float, int)):
             raise TypeError("Upsampling factor must be constant, not %s." % str(type(factors)))
 
         if not isinstance(factors, np.ndarray):

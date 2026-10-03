@@ -675,9 +675,23 @@ class conv2d(bt._Operator):
         """
         values = OrderedDict()
 
+        own_index = None
+        if self.act_func is not None:
+            try:
+                own_index = self.get_shared_attr_index('act_func', self.act_func)
+            except ValueError:
+                own_index = None
+
         for i, act_func in enumerate(self.shared_attrs['act_func'].values()):
             if act_func is None:
                 continue
+
+            # act_func objects with the same stream hash (e.g. relu6 of different layers)
+            # are merged into one entry of shared_attrs, but their parameter values
+            # (e.g. max_val of relu6, which depends on the scale factor) differ per layer.
+            # So the values of this operator's own act_func must be used.
+            if i == own_index:
+                act_func = self.act_func
 
             for name, lparam in act_func.get_local_control_param_values().items():
                 signame = self.to_local_control_param_name(index_offset + i, name)

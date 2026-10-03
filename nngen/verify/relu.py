@@ -35,8 +35,13 @@ def relu6(features, dtype=None, name=None, par=1,
 
     zeros = np.zeros_like(features, dtype=np.int64)
     comp0 = features >= 0
-    sixs = np.zeros_like(features, dtype=np.int64) + [round(features_scale_factor) * 6]
-    comp6 = features > round(features_scale_factor * 6)
+    max_val = int(round(features_scale_factor * 6))
+    if features_dtype is not None:
+        limit = ((2 ** (features_dtype.width - 1) - 1) if features_dtype.signed else
+                 (2 ** features_dtype.width - 1))
+        max_val = min(max_val, limit)
+    sixs = np.zeros_like(features, dtype=np.int64) + [max_val]
+    comp6 = features > max_val
 
     out_op = ((lambda x: x << out_shift) if out_shift >= 0 else
               (lambda x: x >> -out_shift))

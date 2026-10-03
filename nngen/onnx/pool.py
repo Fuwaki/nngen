@@ -99,6 +99,7 @@ def GlobalAveragePool(visitor, node):
     kwargs['strides'] = strides
     kwargs['padding'] = padding
     kwargs['dtype'] = dtype
+    kwargs['sum_dtype'] = sum_dtype  # was computed but not passed: the sum overflowed in int8
     kwargs['name'] = name
 
     c = operator.avg_pool_serial(input, **kwargs)

@@ -19,4 +19,5 @@ from .concat import concat
 from .slice_ import slice_
 from .upsampling2d import upsampling2d
 from .pad import pad
+from .depthwise_conv2d import depthwise_conv2d
 from .normalize import *

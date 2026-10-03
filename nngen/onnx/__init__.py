@@ -52,6 +52,7 @@ func_map = {
     'Pad': pad.Pad,
     'Relu': act_func.Relu,
     'LeakyRelu': act_func.LeakyRelu,
+    'Clip': act_func.Clip,
     'Sigmoid': act_func.Sigmoid,
     'BatchNormalization': batchnormalization.BatchNormalization,
     'Shape': shape.Shape,

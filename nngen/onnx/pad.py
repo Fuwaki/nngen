@@ -30,6 +30,18 @@ def Pad(visitor, node):
                 if pad != 0:
                     all_pads_zero = False
 
+    # opset >= 11: 'pads' (and optional 'constant_value') are inputs, not attributes
+    if not pads and len(node.input) > 1 and node.input[1]:
+        import numpy as np
+        pads_value = util.optimize_to_raw_value(visitor.visit(node.input[1]))
+        for pad in np.array(pads_value).reshape([-1]).tolist():
+            pads.append(int(pad))
+            if pad != 0:
+                all_pads_zero = False
+        if len(node.input) > 2 and node.input[2]:
+            pad_value = float(np.array(util.optimize_to_raw_value(
+                visitor.visit(node.input[2]))).reshape([-1])[0])
+
     if all_pads_zero:
         node_name = util.get_name(node)
         src_name = node.input[0]
@@ -47,7 +59,7 @@ def Pad(visitor, node):
 
     srcs = []
 
-    for src in node.input:
+    for src in node.input[:1]:
         src_obj = visitor.visit(src)
         srcs.append(src_obj)
 

@@ -9,6 +9,7 @@ import nngen.storage as storage
 
 from . import util
 from . import conv2d
+from . import depthwise_conv2d
 from . import matmul
 from . import normalize
 from . import sigmoid
@@ -19,6 +20,7 @@ from . import reduce
 # describe custom quantize methods here
 func_map = {
     'conv2d': conv2d.conv2d,
+    'depthwise_conv2d': depthwise_conv2d.depthwise_conv2d,
     'matmul': matmul.matmul,
     'normalize': normalize.normalize,
     'scaled_add': normalize.scaled_add,

@@ -135,7 +135,7 @@ def run(act_dtype=ng.int16, weight_dtype=ng.int8,
         model_input = np.transpose(model_input, act.reversed_perm)
 
     model.eval()
-    model_out = model(torch.from_numpy(model_input)).detach().numpy()
+    model_out = model(torch.from_numpy(np.ascontiguousarray(model_input))).detach().numpy()
     if act.perm is not None and len(model_out.shape) == len(act.shape):
         model_out = np.transpose(model_out, act.perm)
     scaled_model_out = model_out * out.scale_factor
@@ -180,11 +180,11 @@ def run(act_dtype=ng.int16, weight_dtype=ng.int8,
     model.eval()
     model_relu_out = nn.Sequential(model.conv1,
                                    model.bn1,
-                                   model.relu)(torch.from_numpy(model_input)).detach().numpy()
+                                   model.relu)(torch.from_numpy(np.ascontiguousarray(model_input))).detach().numpy()
     model_maxpool_out = nn.Sequential(model.conv1,
                                       model.bn1,
                                       model.relu,
-                                      model.maxpool)(torch.from_numpy(model_input)).detach().numpy()
+                                      model.maxpool)(torch.from_numpy(np.ascontiguousarray(model_input))).detach().numpy()
 
 #    class model_layer1_0(nn.Module):
 #        def __init__(self):
@@ -201,31 +201,31 @@ def run(act_dtype=ng.int16, weight_dtype=ng.int8,
 #            x = self.layer1_0(x)
 #            return x
 #
-#    model_layer1_0_out = model_layer1_0()(torch.from_numpy(model_input)).detach().numpy()
+#    model_layer1_0_out = model_layer1_0()(torch.from_numpy(np.ascontiguousarray(model_input))).detach().numpy()
 
     model_layer1_0_out = nn.Sequential(model.conv1,
                                        model.bn1,
                                        model.relu,
                                        model.maxpool,
-                                       model.layer1[0])(torch.from_numpy(model_input)).detach().numpy()
+                                       model.layer1[0])(torch.from_numpy(np.ascontiguousarray(model_input))).detach().numpy()
     model_layer1_out = nn.Sequential(model.conv1,
                                      model.bn1,
                                      model.relu,
                                      model.maxpool,
-                                     model.layer1)(torch.from_numpy(model_input)).detach().numpy()
+                                     model.layer1)(torch.from_numpy(np.ascontiguousarray(model_input))).detach().numpy()
 
     model_layer2_0_out = nn.Sequential(model.conv1,
                                        model.bn1,
                                        model.relu,
                                        model.maxpool,
                                        model.layer1,
-                                       model.layer2[0])(torch.from_numpy(model_input)).detach().numpy()
+                                       model.layer2[0])(torch.from_numpy(np.ascontiguousarray(model_input))).detach().numpy()
     model_layer2_out = nn.Sequential(model.conv1,
                                      model.bn1,
                                      model.relu,
                                      model.maxpool,
                                      model.layer1,
-                                     model.layer2)(torch.from_numpy(model_input)).detach().numpy()
+                                     model.layer2)(torch.from_numpy(np.ascontiguousarray(model_input))).detach().numpy()
 
     model_layer3_0_out = nn.Sequential(model.conv1,
                                        model.bn1,
@@ -233,14 +233,14 @@ def run(act_dtype=ng.int16, weight_dtype=ng.int8,
                                        model.maxpool,
                                        model.layer1,
                                        model.layer2,
-                                       model.layer3[0])(torch.from_numpy(model_input)).detach().numpy()
+                                       model.layer3[0])(torch.from_numpy(np.ascontiguousarray(model_input))).detach().numpy()
     model_layer3_out = nn.Sequential(model.conv1,
                                      model.bn1,
                                      model.relu,
                                      model.maxpool,
                                      model.layer1,
                                      model.layer2,
-                                     model.layer3)(torch.from_numpy(model_input)).detach().numpy()
+                                     model.layer3)(torch.from_numpy(np.ascontiguousarray(model_input))).detach().numpy()
 
     model_layer4_0_out = nn.Sequential(model.conv1,
                                        model.bn1,
@@ -249,7 +249,7 @@ def run(act_dtype=ng.int16, weight_dtype=ng.int8,
                                        model.layer1,
                                        model.layer2,
                                        model.layer3,
-                                       model.layer4[0])(torch.from_numpy(model_input)).detach().numpy()
+                                       model.layer4[0])(torch.from_numpy(np.ascontiguousarray(model_input))).detach().numpy()
     model_layer4_out = nn.Sequential(model.conv1,
                                      model.bn1,
                                      model.relu,
@@ -257,7 +257,7 @@ def run(act_dtype=ng.int16, weight_dtype=ng.int8,
                                      model.layer1,
                                      model.layer2,
                                      model.layer3,
-                                     model.layer4)(torch.from_numpy(model_input)).detach().numpy()
+                                     model.layer4)(torch.from_numpy(np.ascontiguousarray(model_input))).detach().numpy()
 
     model_avgpool_out = nn.Sequential(model.conv1,
                                       model.bn1,
@@ -267,7 +267,7 @@ def run(act_dtype=ng.int16, weight_dtype=ng.int8,
                                       model.layer2,
                                       model.layer3,
                                       model.layer4,
-                                      model.avgpool)(torch.from_numpy(model_input)).detach().numpy()
+                                      model.avgpool)(torch.from_numpy(np.ascontiguousarray(model_input))).detach().numpy()
 
     class Flatten(nn.Module):
         def forward(self, input):
@@ -283,7 +283,7 @@ def run(act_dtype=ng.int16, weight_dtype=ng.int8,
                                  model.layer4,
                                  model.avgpool,
                                  Flatten(),
-                                 model.fc)(torch.from_numpy(model_input)).detach().numpy()
+                                 model.fc)(torch.from_numpy(np.ascontiguousarray(model_input))).detach().numpy()
 
     model_outs = [model_relu_out, model_maxpool_out,
                   model_layer1_0_out, model_layer1_out,
