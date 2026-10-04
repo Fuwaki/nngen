@@ -1844,7 +1844,7 @@ def dump_register_map(reg_map):
     s.append('[Register Map]')
 
     maximum = sorted(reg_map.items(), key=lambda x: x[0], reverse=True)[0][0]
-    num_digits = max(int(math.ceil(math.log(maximum, 10))), 1)
+    num_digits = max(int(math.ceil(math.log(max(maximum, 1), 10))), 1)
     fmt = ''.join(('  %', '%d' % num_digits, 'd (%s): %s'))
 
     for i, (direction, desc) in sorted(reg_map.items(), key=lambda x: x[0]):
@@ -1866,7 +1866,7 @@ def dump_memory_map(mem_map):
     s.append('[Default Memory Map (start - end)] (entire range: [%d - %d], size: %s)' %
              (min_gaddr, max_gaddr, size_str(num_bytes)))
 
-    num_digits = max(int(math.ceil(math.log(max_gaddr, 10))), 1)
+    num_digits = max(int(math.ceil(math.log(max(max_gaddr, 1), 10))), 1)
     fmt = ''.join(('  [%', '%d' % num_digits, 'd - %', '%d' % num_digits, 'd]: %s'))
 
     for (start, end), desc in sorted(mem_map.items(), key=lambda x: x[0]):

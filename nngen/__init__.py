@@ -31,6 +31,7 @@ from .onnx import from_onnx
 from .quantizer import quantize
 
 from .verilog import to_ipxact, to_verilog, to_veriloggen
+from .c_header import export_c_header, export_driver_files, collect_address_map
 from .verilog import header_reg
 from .verilog import control_reg_start, control_reg_busy, control_reg_reset
 from .verilog import control_reg_extern_send, control_reg_extern_recv
