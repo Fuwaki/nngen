@@ -58,6 +58,8 @@ examples/efinix_style_transfer/
     ├── style_net_params.bin        # 参数镜像（44,288 B），原样写进 DDR
     ├── style_net_params.h          # 同一份镜像的 C 数组版本
     ├── style_net_nngen_report.txt  # nngen 原始报告（调度表、内存映射、寄存器映射）
+    ├── style_net_test_input.bin    # 上板测试向量：输入 RGBX，64 KB，原样写进 DDR 即可
+    ├── style_net_test_expected.bin # 对应的期望输出（ng.eval，RTL 仿真已逐字节一致），X 字节写为 0，比较时忽略
     ├── summary.json                # 周期数、RAM 估计、精度、验证结果
     └── SHA256SUMS
 ```
@@ -399,10 +401,10 @@ ng.export_driver_files([outputs['out']], 'mynet', 'outdir', config=config, param
 5. **接上 maxi**：nngen `maxi` → 16→128 adapter → 互联 M3。`irq` → `userInterruptA`。
 6. **静态图推理（比特级验证）**：
    - 把 `style_net_params.bin` 写到 0x0102_0000。
-   - 写入测试输入。可以用 `style_net_nngen.py` 的 `synth_images` 生成，也可以从 PC 上的图片按第 4.3 节的格式生成。
+   - 把 `style_net_test_input.bin` 写到输入缓冲（例如 0x0140_0000）。
    - 运行 `nngen_init` → 设置 IN/OUT 地址 → `nngen_start` → 等中断或 BUSY。
-   - 读出输出，与 PC 上 `ng.eval` 的结果做**逐字节**比较，忽略 X 通道。
-   - 【建议】额外导出一份测试输入/期望输出对，可以在 `style_net_nngen.py` 的 `vact/vout` 处保存为 .bin。
+   - 读出输出（64 KB），与 `style_net_test_expected.bin` 做**逐字节**比较，忽略每 4 字节中的第 4 个（X）。必须完全一致；任何差异都说明总线、地址或参数有问题，而不是精度问题。
+   - 之后再用自己的图片：按第 4.3 节的格式生成输入，并在 PC 上用 `ng.eval` 计算期望值。
 7. **性能**：在 START 和中断之间用 CPU 的 mcycle 计时，并与 RTL 的 25.54 M 周期对比，比值就是 DDR 带来的开销。也可以用 `COUNT_STATE/COUNT_DIV/COUNT` 测某个主 FSM 状态（即某一层）的周期数，用来找瓶颈层。
 8. **实时预处理**：加入第 5.3 节的预处理写口。先单次抓一帧张量导出，与软件预处理对比（误差 ≤ 1 LSB）。再进入连续模式，按第 5.2 节做双缓冲。
 9. **显示**：叠加模块从 OUT[k] 读 128×128 RGBX，按第 4.4 节换算成像素，放大后贴到 HDMI 上。地址切换只在 vsync 时发生。

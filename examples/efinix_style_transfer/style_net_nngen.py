@@ -245,6 +245,18 @@ vsize = os.path.getsize(os.path.join(outdir, name + '.v'))
 print('# generated %s.v: %d lines, %d bytes (%.1fs); params %d B; address space %d B'
       % (name, rtl.count('\n'), vsize, gen_time, info['param_size'], info['address_space_amount']))
 
+# bring-up test vector: exactly the bytes that go to / come from DDR (NHWC, C aligned, int8)
+def _aligned_bytes(v, aligned_c):
+    a = np.zeros(v.shape[:-1] + (aligned_c,), dtype=np.int8)
+    a[..., :v.shape[-1]] = v
+    return a.tobytes()
+
+
+open(os.path.join(outdir, name + '_test_input.bin'), 'wb').write(
+    _aligned_bytes(vact, act.aligned_shape[-1]))
+open(os.path.join(outdir, name + '_test_expected.bin'), 'wb').write(
+    _aligned_bytes(vout, out.aligned_shape[-1]))
+
 summary = collections.OrderedDict(
     size=H, par=args.par, axi=axi_datawidth, verilog_lines=rtl.count('\n'), verilog_bytes=vsize,
     param_bytes=info['param_size'], address_space=info['address_space_amount'],
