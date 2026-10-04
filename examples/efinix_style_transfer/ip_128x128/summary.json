@@ -1,0 +1,34 @@
+{
+ "size": 128,
+ "par": 1,
+ "axi": 16,
+ "verilog_lines": 48408,
+ "verilog_bytes": 2467217,
+ "param_bytes": 44288,
+ "address_space": 1789184,
+ "out_scale_factor": 59.7778030836719,
+ "corrcoef": [
+  0.9959119568859146,
+  0.9880887761777508,
+  0.9923541632168023,
+  0.9892776637942771
+ ],
+ "ram": {
+  "ram10k": 70,
+  "ram_leafs": 40,
+  "ram_kbit": 378.0,
+  "block_fill": 0.54,
+  "small_mems": 2,
+  "small_mem_bits": 2192,
+  "shapes": [
+   "8x128 x18 -> 1 blk each",
+   "8x2048 x18 -> 2 blk each",
+   "8x4096 x2 -> 4 blk each",
+   "32x128 x2 -> 4 blk each",
+   "137x8 x2 (logic)"
+  ]
+ },
+ "cycles": 25538410,
+ "verify": "PASSED",
+ "sim_wall_s": 108.84911584854126
+}

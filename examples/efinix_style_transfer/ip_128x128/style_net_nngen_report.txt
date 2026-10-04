@@ -1,0 +1,261 @@
+NNgen: Neural Network Accelerator Generator (version 1.3.4)
+[IP-XACT]
+  Output: style_net
+[Configuration]
+(AXI Master Interface)
+  Data width   : 16
+  Address width: 32
+(AXI Slave Interface)
+  Data width   : 32
+  Address width: 32
+(Other Options)
+  min_onchip_ram_capacity: 1024
+[Schedule Table]
+(Stage 0)
+(Stage 1)
+  <conv2d /stem/stem.0/Conv dtype:int8 shape:(1, 64, 64, 16) strides:(1, 2, 2, 1) padding:(1, 1, 1, 1) bias:(16,) scale:(1,) cshamt_out:25 act_func:relu6 sum_dtype:int32 concur_och:32 stationary:filter keep_filter default_addr:175360 g_index:0 l_index:1 word_alignment:2 aligned_shape:(1, 64, 64, 16) layout:('N', 'H', 'W', 'C') onnx_layout:('N', 'C', 'H', 'W') scale_factor:10.826882>
+  | <placeholder act dtype:int8 shape:(1, 128, 128, 4) default_addr:65536 g_index:2 word_alignment:2 aligned_shape:(1, 128, 128, 4) layout:('N', 'H', 'W', 'C') onnx_layout:('N', 'C', 'H', 'W') scale_factor:128.000000>
+  | <variable onnx::Conv_188 dtype:int8 shape:(16, 3, 3, 4) default_addr:131072 g_index:3 word_alignment:2 aligned_shape:(16, 3, 3, 4) layout:('O', 'H', 'W', 'I') onnx_layout:('O', 'I', 'H', 'W') scale_factor:86.617699>
+  | <variable onnx::Conv_189 dtype:int32 shape:(16,) default_addr:131072 g_index:3 word_alignment:1 aligned_shape:(16,) scale_factor:11087.065430>
+  | <variable onnx_/stem/stem.0/Conv_conv.scale dtype:int32 shape:(1,) default_addr:131072 g_index:3 word_alignment:1 aligned_shape:(1,) scale_factor:32767.000000>
+(Stage 2)
+  <conv2d /enc2/enc2.0/conv/conv.0/conv.0.0/Conv dtype:int8 shape:(1, 64, 64, 64) strides:(1, 1, 1, 1) padding:(0, 0, 0, 0) bias:(64,) scale:(1,) cshamt_out:21 act_func:relu6 sum_dtype:int32 concur_och:2 stationary:filter default_addr:240896 g_index:0 l_index:2 word_alignment:2 aligned_shape:(1, 64, 64, 64) layout:('N', 'H', 'W', 'C') onnx_layout:('N', 'C', 'H', 'W') scale_factor:13.477807>
+  | <conv2d /stem/stem.0/Conv dtype:int8 shape:(1, 64, 64, 16) strides:(1, 2, 2, 1) padding:(1, 1, 1, 1) bias:(16,) scale:(1,) cshamt_out:25 act_func:relu6 sum_dtype:int32 concur_och:32 stationary:filter keep_filter default_addr:175360 g_index:0 l_index:1 word_alignment:2 aligned_shape:(1, 64, 64, 16) layout:('N', 'H', 'W', 'C') onnx_layout:('N', 'C', 'H', 'W') scale_factor:10.826882>
+  | <variable onnx::Conv_191 dtype:int8 shape:(64, 1, 1, 16) default_addr:131072 g_index:3 word_alignment:2 aligned_shape:(64, 1, 1, 16) layout:('O', 'H', 'W', 'I') onnx_layout:('O', 'I', 'H', 'W') scale_factor:79.672615>
+  | <variable onnx::Conv_192 dtype:int32 shape:(64,) default_addr:131072 g_index:3 word_alignment:1 aligned_shape:(64,) scale_factor:862.605995>
+  | <variable onnx_/enc2/enc2.0/conv/conv.0/conv.0.0/Conv_conv.scale dtype:int32 shape:(1,) default_addr:131072 g_index:3 word_alignment:1 aligned_shape:(1,) scale_factor:32767.000000>
+(Stage 3)
+  <depthwise_conv2d /enc2/enc2.0/conv/conv.1/conv.1.0/Conv dtype:int8 shape:(1, 32, 32, 64) ksize:(1, 3, 3, 1) strides:(1, 2, 2, 1) padding:(1, 1, 1, 1) bias:(64,) scale:(64,) cshamt_out:19 act_func:relu6 sum_dtype:int32 default_addr:503040 g_index:0 l_index:3 word_alignment:2 aligned_shape:(1, 32, 32, 64) layout:('N', 'H', 'W', 'C') onnx_layout:('N', 'C', 'H', 'W') scale_factor:15.843660>
+  | <conv2d /enc2/enc2.0/conv/conv.0/conv.0.0/Conv dtype:int8 shape:(1, 64, 64, 64) strides:(1, 1, 1, 1) padding:(0, 0, 0, 0) bias:(64,) scale:(1,) cshamt_out:21 act_func:relu6 sum_dtype:int32 concur_och:2 stationary:filter default_addr:240896 g_index:0 l_index:2 word_alignment:2 aligned_shape:(1, 64, 64, 64) layout:('N', 'H', 'W', 'C') onnx_layout:('N', 'C', 'H', 'W') scale_factor:13.477807>
+  | <variable onnx_/enc2/enc2.0/conv/conv.1/conv.1.0/Conv_dwconv.filter dtype:int8 shape:(3, 3, 64) default_addr:131072 g_index:3 word_alignment:2 aligned_shape:(3, 3, 64) scale_factor:127.000000>
+  | <variable onnx_/enc2/enc2.0/conv/conv.1/conv.1.0/Conv_dwconv.bias dtype:int32 shape:(64,) default_addr:131072 g_index:3 word_alignment:1 aligned_shape:(64,) scale_factor:1711.681533>
+  | <variable onnx_/enc2/enc2.0/conv/conv.1/conv.1.0/Conv_dwconv.scale dtype:int32 shape:(64,) default_addr:131072 g_index:3 word_alignment:1 aligned_shape:(64,) scale_factor:4852.912691>
+(Stage 4)
+  <conv2d /enc2/enc2.0/conv/conv.2/conv.2.0/Conv dtype:int8 shape:(1, 32, 32, 24) strides:(1, 1, 1, 1) padding:(0, 0, 0, 0) bias:(24,) scale:(1,) cshamt_out:24 sum_dtype:int32 concur_och:4 stationary:filter default_addr:568576 g_index:0 l_index:4 word_alignment:2 aligned_shape:(1, 32, 32, 24) layout:('N', 'H', 'W', 'C') onnx_layout:('N', 'C', 'H', 'W') scale_factor:8.099116>
+  | <depthwise_conv2d /enc2/enc2.0/conv/conv.1/conv.1.0/Conv dtype:int8 shape:(1, 32, 32, 64) ksize:(1, 3, 3, 1) strides:(1, 2, 2, 1) padding:(1, 1, 1, 1) bias:(64,) scale:(64,) cshamt_out:19 act_func:relu6 sum_dtype:int32 default_addr:503040 g_index:0 l_index:3 word_alignment:2 aligned_shape:(1, 32, 32, 64) layout:('N', 'H', 'W', 'C') onnx_layout:('N', 'C', 'H', 'W') scale_factor:15.843660>
+  | <variable onnx::Conv_197 dtype:int8 shape:(24, 1, 1, 64) default_addr:131072 g_index:3 word_alignment:2 aligned_shape:(24, 1, 1, 64) layout:('O', 'H', 'W', 'I') onnx_layout:('O', 'I', 'H', 'W') scale_factor:261.737122>
+  | <variable onnx::Conv_198 dtype:int32 shape:(24,) default_addr:131072 g_index:3 word_alignment:1 aligned_shape:(24,) scale_factor:4146.874074>
+  | <variable onnx_/enc2/enc2.0/conv/conv.2/conv.2.0/Conv_conv.scale dtype:int32 shape:(1,) default_addr:131072 g_index:3 word_alignment:1 aligned_shape:(1,) scale_factor:32767.000000>
+(Stage 5)
+  <conv2d /enc2/enc2.1/conv/conv.0/conv.0.0/Conv dtype:int8 shape:(1, 32, 32, 96) strides:(1, 1, 1, 1) padding:(0, 0, 0, 0) bias:(96,) scale:(1,) cshamt_out:22 act_func:relu6 sum_dtype:int32 concur_och:4 stationary:filter default_addr:593152 g_index:0 l_index:5 word_alignment:2 aligned_shape:(1, 32, 32, 96) layout:('N', 'H', 'W', 'C') onnx_layout:('N', 'C', 'H', 'W') scale_factor:11.890232>
+  | <conv2d /enc2/enc2.0/conv/conv.2/conv.2.0/Conv dtype:int8 shape:(1, 32, 32, 24) strides:(1, 1, 1, 1) padding:(0, 0, 0, 0) bias:(24,) scale:(1,) cshamt_out:24 sum_dtype:int32 concur_och:4 stationary:filter default_addr:568576 g_index:0 l_index:4 word_alignment:2 aligned_shape:(1, 32, 32, 24) layout:('N', 'H', 'W', 'C') onnx_layout:('N', 'C', 'H', 'W') scale_factor:8.099116>
+  | <variable onnx::Conv_200 dtype:int8 shape:(96, 1, 1, 24) default_addr:131072 g_index:3 word_alignment:2 aligned_shape:(96, 1, 1, 24) layout:('O', 'H', 'W', 'I') onnx_layout:('O', 'I', 'H', 'W') scale_factor:187.921265>
+  | <variable onnx::Conv_201 dtype:int32 shape:(96,) default_addr:131072 g_index:3 word_alignment:1 aligned_shape:(96,) scale_factor:1521.996169>
+  | <variable onnx_/enc2/enc2.1/conv/conv.0/conv.0.0/Conv_conv.scale dtype:int32 shape:(1,) default_addr:131072 g_index:3 word_alignment:1 aligned_shape:(1,) scale_factor:32767.000000>
+(Stage 6)
+  <depthwise_conv2d /enc2/enc2.1/conv/conv.1/conv.1.0/Conv dtype:int8 shape:(1, 32, 32, 96) ksize:(1, 3, 3, 1) strides:(1, 1, 1, 1) padding:(1, 1, 1, 1) bias:(96,) scale:(96,) cshamt_out:20 act_func:relu6 sum_dtype:int32 default_addr:691456 g_index:0 l_index:6 word_alignment:2 aligned_shape:(1, 32, 32, 96) layout:('N', 'H', 'W', 'C') onnx_layout:('N', 'C', 'H', 'W') scale_factor:20.674454>
+  | <conv2d /enc2/enc2.1/conv/conv.0/conv.0.0/Conv dtype:int8 shape:(1, 32, 32, 96) strides:(1, 1, 1, 1) padding:(0, 0, 0, 0) bias:(96,) scale:(1,) cshamt_out:22 act_func:relu6 sum_dtype:int32 concur_och:4 stationary:filter default_addr:593152 g_index:0 l_index:5 word_alignment:2 aligned_shape:(1, 32, 32, 96) layout:('N', 'H', 'W', 'C') onnx_layout:('N', 'C', 'H', 'W') scale_factor:11.890232>
+  | <variable onnx_/enc2/enc2.1/conv/conv.1/conv.1.0/Conv_dwconv.filter dtype:int8 shape:(3, 3, 96) default_addr:131072 g_index:3 word_alignment:2 aligned_shape:(3, 3, 96) scale_factor:127.000000>
+  | <variable onnx_/enc2/enc2.1/conv/conv.1/conv.1.0/Conv_dwconv.bias dtype:int32 shape:(96,) default_addr:131072 g_index:3 word_alignment:1 aligned_shape:(96,) scale_factor:1510.059489>
+  | <variable onnx_/enc2/enc2.1/conv/conv.1/conv.1.0/Conv_dwconv.scale dtype:int32 shape:(96,) default_addr:131072 g_index:3 word_alignment:1 aligned_shape:(96,) scale_factor:14356.213464>
+(Stage 7)
+  <conv2d /enc2/enc2.1/conv/conv.2/conv.2.0/Conv dtype:int8 shape:(1, 32, 32, 24) strides:(1, 1, 1, 1) padding:(0, 0, 0, 0) bias:(24,) scale:(1,) cshamt_out:25 sum_dtype:int32 concur_och:4 stationary:filter default_addr:789760 g_index:0 l_index:7 word_alignment:2 aligned_shape:(1, 32, 32, 24) layout:('N', 'H', 'W', 'C') onnx_layout:('N', 'C', 'H', 'W') scale_factor:7.173239>
+  | <depthwise_conv2d /enc2/enc2.1/conv/conv.1/conv.1.0/Conv dtype:int8 shape:(1, 32, 32, 96) ksize:(1, 3, 3, 1) strides:(1, 1, 1, 1) padding:(1, 1, 1, 1) bias:(96,) scale:(96,) cshamt_out:20 act_func:relu6 sum_dtype:int32 default_addr:691456 g_index:0 l_index:6 word_alignment:2 aligned_shape:(1, 32, 32, 96) layout:('N', 'H', 'W', 'C') onnx_layout:('N', 'C', 'H', 'W') scale_factor:20.674454>
+  | <variable onnx::Conv_206 dtype:int8 shape:(24, 1, 1, 96) default_addr:131072 g_index:3 word_alignment:2 aligned_shape:(24, 1, 1, 96) layout:('O', 'H', 'W', 'I') onnx_layout:('O', 'I', 'H', 'W') scale_factor:355.299377>
+  | <variable onnx::Conv_207 dtype:int32 shape:(24,) default_addr:131072 g_index:3 word_alignment:1 aligned_shape:(24,) scale_factor:7345.620665>
+  | <variable onnx_/enc2/enc2.1/conv/conv.2/conv.2.0/Conv_conv.scale dtype:int32 shape:(1,) default_addr:131072 g_index:3 word_alignment:1 aligned_shape:(1,) scale_factor:32767.000000>
+(Stage 8)
+  <scaled_add None dtype:int8 shape:(1, 32, 32, 24) a_scale:45 b_scale:51 shamt:6 default_addr:814336 g_index:0 l_index:8 word_alignment:2 aligned_shape:(1, 32, 32, 24) layout:('N', 'H', 'W', 'C') onnx_layout:('N', 'C', 'H', 'W') scale_factor:5.694691>
+  | <conv2d /enc2/enc2.0/conv/conv.2/conv.2.0/Conv dtype:int8 shape:(1, 32, 32, 24) strides:(1, 1, 1, 1) padding:(0, 0, 0, 0) bias:(24,) scale:(1,) cshamt_out:24 sum_dtype:int32 concur_och:4 stationary:filter default_addr:568576 g_index:0 l_index:4 word_alignment:2 aligned_shape:(1, 32, 32, 24) layout:('N', 'H', 'W', 'C') onnx_layout:('N', 'C', 'H', 'W') scale_factor:8.099116>
+  | <conv2d /enc2/enc2.1/conv/conv.2/conv.2.0/Conv dtype:int8 shape:(1, 32, 32, 24) strides:(1, 1, 1, 1) padding:(0, 0, 0, 0) bias:(24,) scale:(1,) cshamt_out:25 sum_dtype:int32 concur_och:4 stationary:filter default_addr:789760 g_index:0 l_index:7 word_alignment:2 aligned_shape:(1, 32, 32, 24) layout:('N', 'H', 'W', 'C') onnx_layout:('N', 'C', 'H', 'W') scale_factor:7.173239>
+(Stage 9)
+  <conv2d /enc3/enc3.0/conv/conv.0/conv.0.0/Conv dtype:int8 shape:(1, 32, 32, 96) strides:(1, 1, 1, 1) padding:(0, 0, 0, 0) bias:(96,) scale:(1,) cshamt_out:22 act_func:relu6 sum_dtype:int32 concur_och:4 stationary:filter default_addr:838912 g_index:0 l_index:9 word_alignment:2 aligned_shape:(1, 32, 32, 96) layout:('N', 'H', 'W', 'C') onnx_layout:('N', 'C', 'H', 'W') scale_factor:13.023160>
+  | <scaled_add None dtype:int8 shape:(1, 32, 32, 24) a_scale:45 b_scale:51 shamt:6 default_addr:814336 g_index:0 l_index:8 word_alignment:2 aligned_shape:(1, 32, 32, 24) layout:('N', 'H', 'W', 'C') onnx_layout:('N', 'C', 'H', 'W') scale_factor:5.694691>
+  | <variable onnx::Conv_209 dtype:int8 shape:(96, 1, 1, 24) default_addr:131072 g_index:3 word_alignment:2 aligned_shape:(96, 1, 1, 24) layout:('O', 'H', 'W', 'I') onnx_layout:('O', 'I', 'H', 'W') scale_factor:292.731476>
+  | <variable onnx::Conv_210 dtype:int32 shape:(96,) default_addr:131072 g_index:3 word_alignment:1 aligned_shape:(96,) scale_factor:1667.015335>
+  | <variable onnx_/enc3/enc3.0/conv/conv.0/conv.0.0/Conv_conv.scale dtype:int32 shape:(1,) default_addr:131072 g_index:3 word_alignment:1 aligned_shape:(1,) scale_factor:32767.000000>
+(Stage 10)
+  <depthwise_conv2d /enc3/enc3.0/conv/conv.1/conv.1.0/Conv dtype:int8 shape:(1, 16, 16, 96) ksize:(1, 3, 3, 1) strides:(1, 2, 2, 1) padding:(1, 1, 1, 1) bias:(96,) scale:(96,) cshamt_out:21 act_func:relu6 sum_dtype:int32 default_addr:937216 g_index:0 l_index:10 word_alignment:2 aligned_shape:(1, 16, 16, 96) layout:('N', 'H', 'W', 'C') onnx_layout:('N', 'C', 'H', 'W') scale_factor:11.058333>
+  | <conv2d /enc3/enc3.0/conv/conv.0/conv.0.0/Conv dtype:int8 shape:(1, 32, 32, 96) strides:(1, 1, 1, 1) padding:(0, 0, 0, 0) bias:(96,) scale:(1,) cshamt_out:22 act_func:relu6 sum_dtype:int32 concur_och:4 stationary:filter default_addr:838912 g_index:0 l_index:9 word_alignment:2 aligned_shape:(1, 32, 32, 96) layout:('N', 'H', 'W', 'C') onnx_layout:('N', 'C', 'H', 'W') scale_factor:13.023160>
+  | <variable onnx_/enc3/enc3.0/conv/conv.1/conv.1.0/Conv_dwconv.filter dtype:int8 shape:(3, 3, 96) default_addr:131072 g_index:3 word_alignment:2 aligned_shape:(3, 3, 96) scale_factor:127.000000>
+  | <variable onnx_/enc3/enc3.0/conv/conv.1/conv.1.0/Conv_dwconv.bias dtype:int32 shape:(96,) default_addr:131072 g_index:3 word_alignment:1 aligned_shape:(96,) scale_factor:1653.941301>
+  | <variable onnx_/enc3/enc3.0/conv/conv.1/conv.1.0/Conv_dwconv.scale dtype:int32 shape:(96,) default_addr:131072 g_index:3 word_alignment:1 aligned_shape:(96,) scale_factor:14021.661474>
+(Stage 11)
+  <conv2d /enc3/enc3.0/conv/conv.2/conv.2.0/Conv dtype:int8 shape:(1, 16, 16, 32) strides:(1, 1, 1, 1) padding:(0, 0, 0, 0) bias:(32,) scale:(1,) cshamt_out:24 sum_dtype:int32 concur_och:8 stationary:filter default_addr:961792 g_index:0 l_index:11 word_alignment:2 aligned_shape:(1, 16, 16, 32) layout:('N', 'H', 'W', 'C') onnx_layout:('N', 'C', 'H', 'W') scale_factor:6.427566>
+  | <depthwise_conv2d /enc3/enc3.0/conv/conv.1/conv.1.0/Conv dtype:int8 shape:(1, 16, 16, 96) ksize:(1, 3, 3, 1) strides:(1, 2, 2, 1) padding:(1, 1, 1, 1) bias:(96,) scale:(96,) cshamt_out:21 act_func:relu6 sum_dtype:int32 default_addr:937216 g_index:0 l_index:10 word_alignment:2 aligned_shape:(1, 16, 16, 96) layout:('N', 'H', 'W', 'C') onnx_layout:('N', 'C', 'H', 'W') scale_factor:11.058333>
+  | <variable onnx::Conv_215 dtype:int8 shape:(32, 1, 1, 96) default_addr:131072 g_index:3 word_alignment:2 aligned_shape:(32, 1, 1, 96) layout:('O', 'H', 'W', 'I') onnx_layout:('O', 'I', 'H', 'W') scale_factor:297.604919>
+  | <variable onnx::Conv_216 dtype:int32 shape:(32,) default_addr:131072 g_index:3 word_alignment:1 aligned_shape:(32,) scale_factor:3291.014281>
+  | <variable onnx_/enc3/enc3.0/conv/conv.2/conv.2.0/Conv_conv.scale dtype:int32 shape:(1,) default_addr:131072 g_index:3 word_alignment:1 aligned_shape:(1,) scale_factor:32767.000000>
+(Stage 12)
+  <conv2d /enc3/enc3.1/conv/conv.0/conv.0.0/Conv dtype:int8 shape:(1, 16, 16, 128) strides:(1, 1, 1, 1) padding:(0, 0, 0, 0) bias:(128,) scale:(1,) cshamt_out:22 act_func:relu6 sum_dtype:int32 concur_och:8 stationary:filter keep_input default_addr:969984 g_index:0 l_index:12 word_alignment:2 aligned_shape:(1, 16, 16, 128) layout:('N', 'H', 'W', 'C') onnx_layout:('N', 'C', 'H', 'W') scale_factor:12.215694>
+  | <conv2d /enc3/enc3.0/conv/conv.2/conv.2.0/Conv dtype:int8 shape:(1, 16, 16, 32) strides:(1, 1, 1, 1) padding:(0, 0, 0, 0) bias:(32,) scale:(1,) cshamt_out:24 sum_dtype:int32 concur_och:8 stationary:filter default_addr:961792 g_index:0 l_index:11 word_alignment:2 aligned_shape:(1, 16, 16, 32) layout:('N', 'H', 'W', 'C') onnx_layout:('N', 'C', 'H', 'W') scale_factor:6.427566>
+  | <variable onnx::Conv_218 dtype:int8 shape:(128, 1, 1, 32) default_addr:131072 g_index:3 word_alignment:2 aligned_shape:(128, 1, 1, 32) layout:('O', 'H', 'W', 'I') onnx_layout:('O', 'I', 'H', 'W') scale_factor:243.273514>
+  | <variable onnx::Conv_219 dtype:int32 shape:(128,) default_addr:131072 g_index:3 word_alignment:1 aligned_shape:(128,) scale_factor:1563.656592>
+  | <variable onnx_/enc3/enc3.1/conv/conv.0/conv.0.0/Conv_conv.scale dtype:int32 shape:(1,) default_addr:131072 g_index:3 word_alignment:1 aligned_shape:(1,) scale_factor:32767.000000>
+(Stage 13)
+  <depthwise_conv2d /enc3/enc3.1/conv/conv.1/conv.1.0/Conv dtype:int8 shape:(1, 16, 16, 128) ksize:(1, 3, 3, 1) strides:(1, 1, 1, 1) padding:(1, 1, 1, 1) bias:(128,) scale:(128,) cshamt_out:20 act_func:relu6 sum_dtype:int32 default_addr:1002752 g_index:0 l_index:13 word_alignment:2 aligned_shape:(1, 16, 16, 128) layout:('N', 'H', 'W', 'C') onnx_layout:('N', 'C', 'H', 'W') scale_factor:19.412202>
+  | <conv2d /enc3/enc3.1/conv/conv.0/conv.0.0/Conv dtype:int8 shape:(1, 16, 16, 128) strides:(1, 1, 1, 1) padding:(0, 0, 0, 0) bias:(128,) scale:(1,) cshamt_out:22 act_func:relu6 sum_dtype:int32 concur_och:8 stationary:filter keep_input default_addr:969984 g_index:0 l_index:12 word_alignment:2 aligned_shape:(1, 16, 16, 128) layout:('N', 'H', 'W', 'C') onnx_layout:('N', 'C', 'H', 'W') scale_factor:12.215694>
+  | <variable onnx_/enc3/enc3.1/conv/conv.1/conv.1.0/Conv_dwconv.filter dtype:int8 shape:(3, 3, 128) default_addr:131072 g_index:3 word_alignment:2 aligned_shape:(3, 3, 128) scale_factor:127.000000>
+  | <variable onnx_/enc3/enc3.1/conv/conv.1/conv.1.0/Conv_dwconv.bias dtype:int32 shape:(128,) default_addr:131072 g_index:3 word_alignment:1 aligned_shape:(128,) scale_factor:1551.393179>
+  | <variable onnx_/enc3/enc3.1/conv/conv.1/conv.1.0/Conv_dwconv.scale dtype:int32 shape:(128,) default_addr:131072 g_index:3 word_alignment:1 aligned_shape:(128,) scale_factor:13120.574040>
+(Stage 14)
+  <conv2d /enc3/enc3.1/conv/conv.2/conv.2.0/Conv dtype:int8 shape:(1, 16, 16, 32) strides:(1, 1, 1, 1) padding:(0, 0, 0, 0) bias:(32,) scale:(1,) cshamt_out:25 sum_dtype:int32 concur_och:8 stationary:filter default_addr:1035520 g_index:0 l_index:14 word_alignment:2 aligned_shape:(1, 16, 16, 32) layout:('N', 'H', 'W', 'C') onnx_layout:('N', 'C', 'H', 'W') scale_factor:6.913002>
+  | <depthwise_conv2d /enc3/enc3.1/conv/conv.1/conv.1.0/Conv dtype:int8 shape:(1, 16, 16, 128) ksize:(1, 3, 3, 1) strides:(1, 1, 1, 1) padding:(1, 1, 1, 1) bias:(128,) scale:(128,) cshamt_out:20 act_func:relu6 sum_dtype:int32 default_addr:1002752 g_index:0 l_index:13 word_alignment:2 aligned_shape:(1, 16, 16, 128) layout:('N', 'H', 'W', 'C') onnx_layout:('N', 'C', 'H', 'W') scale_factor:19.412202>
+  | <variable onnx::Conv_224 dtype:int8 shape:(32, 1, 1, 128) default_addr:131072 g_index:3 word_alignment:2 aligned_shape:(32, 1, 1, 128) layout:('O', 'H', 'W', 'I') onnx_layout:('O', 'I', 'H', 'W') scale_factor:364.674225>
+  | <variable onnx::Conv_225 dtype:int32 shape:(32,) default_addr:131072 g_index:3 word_alignment:1 aligned_shape:(32,) scale_factor:7079.129699>
+  | <variable onnx_/enc3/enc3.1/conv/conv.2/conv.2.0/Conv_conv.scale dtype:int32 shape:(1,) default_addr:131072 g_index:3 word_alignment:1 aligned_shape:(1,) scale_factor:32767.000000>
+(Stage 15)
+  <upsampling2d /up/Resize dtype:int8 shape:(1, 32, 32, 32) default_addr:1043712 g_index:0 l_index:15 word_alignment:2 aligned_shape:(1, 32, 32, 32) layout:('N', 'H', 'W', 'C') onnx_layout:('N', 'C', 'H', 'W') scale_factor:4.874206>
+  | <scaled_add None dtype:int8 shape:(1, 16, 16, 32) a_scale:388 b_scale:361 shamt:9 default_addr:0 word_alignment:2 aligned_shape:(1, 16, 16, 32) layout:('N', 'H', 'W', 'C') onnx_layout:('N', 'C', 'H', 'W') scale_factor:4.874206>
+  | | <conv2d /enc3/enc3.0/conv/conv.2/conv.2.0/Conv dtype:int8 shape:(1, 16, 16, 32) strides:(1, 1, 1, 1) padding:(0, 0, 0, 0) bias:(32,) scale:(1,) cshamt_out:24 sum_dtype:int32 concur_och:8 stationary:filter default_addr:961792 g_index:0 l_index:11 word_alignment:2 aligned_shape:(1, 16, 16, 32) layout:('N', 'H', 'W', 'C') onnx_layout:('N', 'C', 'H', 'W') scale_factor:6.427566>
+  | | <conv2d /enc3/enc3.1/conv/conv.2/conv.2.0/Conv dtype:int8 shape:(1, 16, 16, 32) strides:(1, 1, 1, 1) padding:(0, 0, 0, 0) bias:(32,) scale:(1,) cshamt_out:25 sum_dtype:int32 concur_och:8 stationary:filter default_addr:1035520 g_index:0 l_index:14 word_alignment:2 aligned_shape:(1, 16, 16, 32) layout:('N', 'H', 'W', 'C') onnx_layout:('N', 'C', 'H', 'W') scale_factor:6.913002>
+(Stage 16)
+  <conv2d /dec3/dec3.0/Conv dtype:int8 shape:(1, 32, 32, 24) strides:(1, 1, 1, 1) padding:(1, 1, 1, 1) bias:(24,) scale:(1,) cshamt_out:25 act_func:relu6 sum_dtype:int32 concur_och:4 stationary:filter keep_input default_addr:1076480 g_index:0 l_index:16 word_alignment:2 aligned_shape:(1, 32, 32, 24) layout:('N', 'H', 'W', 'C') onnx_layout:('N', 'C', 'H', 'W') scale_factor:11.608528>
+  | <upsampling2d /up/Resize dtype:int8 shape:(1, 32, 32, 32) default_addr:1043712 g_index:0 l_index:15 word_alignment:2 aligned_shape:(1, 32, 32, 32) layout:('N', 'H', 'W', 'C') onnx_layout:('N', 'C', 'H', 'W') scale_factor:4.874206>
+  | <variable onnx::Conv_227 dtype:int8 shape:(24, 3, 3, 32) default_addr:131072 g_index:3 word_alignment:2 aligned_shape:(24, 3, 3, 32) layout:('O', 'H', 'W', 'I') onnx_layout:('O', 'I', 'H', 'W') scale_factor:2438.857666>
+  | <variable onnx::Conv_228 dtype:int32 shape:(24,) default_addr:131072 g_index:3 word_alignment:1 aligned_shape:(24,) scale_factor:11887.495210>
+  | <variable onnx_/dec3/dec3.0/Conv_conv.scale dtype:int32 shape:(1,) default_addr:131072 g_index:3 word_alignment:1 aligned_shape:(1,) scale_factor:32767.000000>
+(Stage 17)
+  <upsampling2d /up_1/Resize dtype:int8 shape:(1, 64, 64, 24) default_addr:1101056 g_index:0 l_index:17 word_alignment:2 aligned_shape:(1, 64, 64, 24) layout:('N', 'H', 'W', 'C') onnx_layout:('N', 'C', 'H', 'W') scale_factor:4.081123>
+  | <scaled_add None dtype:int8 shape:(1, 32, 32, 24) a_scale:90 b_scale:184 shamt:8 default_addr:0 word_alignment:2 aligned_shape:(1, 32, 32, 24) layout:('N', 'H', 'W', 'C') onnx_layout:('N', 'C', 'H', 'W') scale_factor:4.081123>
+  | | <conv2d /dec3/dec3.0/Conv dtype:int8 shape:(1, 32, 32, 24) strides:(1, 1, 1, 1) padding:(1, 1, 1, 1) bias:(24,) scale:(1,) cshamt_out:25 act_func:relu6 sum_dtype:int32 concur_och:4 stationary:filter keep_input default_addr:1076480 g_index:0 l_index:16 word_alignment:2 aligned_shape:(1, 32, 32, 24) layout:('N', 'H', 'W', 'C') onnx_layout:('N', 'C', 'H', 'W') scale_factor:11.608528>
+  | | <scaled_add None dtype:int8 shape:(1, 32, 32, 24) a_scale:45 b_scale:51 shamt:6 default_addr:814336 g_index:0 l_index:8 word_alignment:2 aligned_shape:(1, 32, 32, 24) layout:('N', 'H', 'W', 'C') onnx_layout:('N', 'C', 'H', 'W') scale_factor:5.694691>
+(Stage 18)
+  <conv2d /dec2/dec2.0/Conv dtype:int8 shape:(1, 64, 64, 16) strides:(1, 1, 1, 1) padding:(1, 1, 1, 1) bias:(16,) scale:(1,) cshamt_out:25 act_func:relu6 sum_dtype:int32 concur_och:4 stationary:filter default_addr:1199360 g_index:0 l_index:18 word_alignment:2 aligned_shape:(1, 64, 64, 16) layout:('N', 'H', 'W', 'C') onnx_layout:('N', 'C', 'H', 'W') scale_factor:14.444147>
+  | <upsampling2d /up_1/Resize dtype:int8 shape:(1, 64, 64, 24) default_addr:1101056 g_index:0 l_index:17 word_alignment:2 aligned_shape:(1, 64, 64, 24) layout:('N', 'H', 'W', 'C') onnx_layout:('N', 'C', 'H', 'W') scale_factor:4.081123>
+  | <variable onnx::Conv_230 dtype:int8 shape:(16, 3, 3, 24) default_addr:131072 g_index:3 word_alignment:2 aligned_shape:(16, 3, 3, 24) layout:('O', 'H', 'W', 'I') onnx_layout:('O', 'I', 'H', 'W') scale_factor:3624.310791>
+  | <variable onnx::Conv_231 dtype:int32 shape:(16,) default_addr:131072 g_index:3 word_alignment:1 aligned_shape:(16,) scale_factor:14791.258283>
+  | <variable onnx_/dec2/dec2.0/Conv_conv.scale dtype:int32 shape:(1,) default_addr:131072 g_index:3 word_alignment:1 aligned_shape:(1,) scale_factor:32767.000000>
+(Stage 19)
+  <upsampling2d /up_2/Resize dtype:int8 shape:(1, 128, 128, 16) default_addr:1264896 g_index:0 l_index:19 word_alignment:2 aligned_shape:(1, 128, 128, 16) layout:('N', 'H', 'W', 'C') onnx_layout:('N', 'C', 'H', 'W') scale_factor:10.212464>
+  | <scaled_add None dtype:int8 shape:(1, 64, 64, 16) a_scale:181 b_scale:241 shamt:8 default_addr:0 word_alignment:2 aligned_shape:(1, 64, 64, 16) layout:('N', 'H', 'W', 'C') onnx_layout:('N', 'C', 'H', 'W') scale_factor:10.212464>
+  | | <conv2d /dec2/dec2.0/Conv dtype:int8 shape:(1, 64, 64, 16) strides:(1, 1, 1, 1) padding:(1, 1, 1, 1) bias:(16,) scale:(1,) cshamt_out:25 act_func:relu6 sum_dtype:int32 concur_och:4 stationary:filter default_addr:1199360 g_index:0 l_index:18 word_alignment:2 aligned_shape:(1, 64, 64, 16) layout:('N', 'H', 'W', 'C') onnx_layout:('N', 'C', 'H', 'W') scale_factor:14.444147>
+  | | <conv2d /stem/stem.0/Conv dtype:int8 shape:(1, 64, 64, 16) strides:(1, 2, 2, 1) padding:(1, 1, 1, 1) bias:(16,) scale:(1,) cshamt_out:25 act_func:relu6 sum_dtype:int32 concur_och:32 stationary:filter keep_filter default_addr:175360 g_index:0 l_index:1 word_alignment:2 aligned_shape:(1, 64, 64, 16) layout:('N', 'H', 'W', 'C') onnx_layout:('N', 'C', 'H', 'W') scale_factor:10.826882>
+(Stage 20)
+  <conv2d /dec1/dec1.0/Conv dtype:int8 shape:(1, 128, 128, 16) strides:(1, 1, 1, 1) padding:(1, 1, 1, 1) bias:(16,) scale:(1,) cshamt_out:25 act_func:relu6 sum_dtype:int32 concur_och:8 stationary:filter default_addr:1527040 g_index:0 l_index:20 word_alignment:2 aligned_shape:(1, 128, 128, 16) layout:('N', 'H', 'W', 'C') onnx_layout:('N', 'C', 'H', 'W') scale_factor:12.824104>
+  | <upsampling2d /up_2/Resize dtype:int8 shape:(1, 128, 128, 16) default_addr:1264896 g_index:0 l_index:19 word_alignment:2 aligned_shape:(1, 128, 128, 16) layout:('N', 'H', 'W', 'C') onnx_layout:('N', 'C', 'H', 'W') scale_factor:10.212464>
+  | <variable onnx::Conv_233 dtype:int8 shape:(16, 3, 3, 16) default_addr:131072 g_index:3 word_alignment:2 aligned_shape:(16, 3, 3, 16) layout:('O', 'H', 'W', 'I') onnx_layout:('O', 'I', 'H', 'W') scale_factor:1285.907471>
+  | <variable onnx::Conv_234 dtype:int32 shape:(16,) default_addr:131072 g_index:3 word_alignment:1 aligned_shape:(16,) scale_factor:13132.283184>
+  | <variable onnx_/dec1/dec1.0/Conv_conv.scale dtype:int32 shape:(1,) default_addr:131072 g_index:3 word_alignment:1 aligned_shape:(1,) scale_factor:32767.000000>
+(Stage 21)
+  <conv2d /head/Conv dtype:int8 shape:(1, 128, 128, 3) strides:(1, 1, 1, 1) padding:(1, 1, 1, 1) bias:(3,) scale:(1,) cshamt_out:23 sum_dtype:int32 concur_och:8 stationary:filter keep_filter default_addr:0 g_index:1 word_alignment:2 aligned_shape:(1, 128, 128, 4) layout:('N', 'H', 'W', 'C') onnx_layout:('N', 'C', 'H', 'W') scale_factor:59.777803>
+  | <conv2d /dec1/dec1.0/Conv dtype:int8 shape:(1, 128, 128, 16) strides:(1, 1, 1, 1) padding:(1, 1, 1, 1) bias:(16,) scale:(1,) cshamt_out:25 act_func:relu6 sum_dtype:int32 concur_och:8 stationary:filter default_addr:1527040 g_index:0 l_index:20 word_alignment:2 aligned_shape:(1, 128, 128, 16) layout:('N', 'H', 'W', 'C') onnx_layout:('N', 'C', 'H', 'W') scale_factor:12.824104>
+  | <variable head.weight dtype:int8 shape:(3, 3, 3, 16) default_addr:131072 g_index:3 word_alignment:2 aligned_shape:(3, 3, 3, 16) layout:('O', 'H', 'W', 'I') onnx_layout:('O', 'I', 'H', 'W') scale_factor:1193.345337>
+  | <variable head.bias dtype:int32 shape:(3,) default_addr:131072 g_index:3 word_alignment:1 aligned_shape:(3,) scale_factor:15303.584618>
+  | <variable onnx_/head/Conv_conv.scale dtype:int32 shape:(1,) default_addr:131072 g_index:3 word_alignment:1 aligned_shape:(1,) scale_factor:32767.000000>
+[RAM (spec: num)]
+  32-bit 128-entry 2-port 1-bank RAM: 2
+  8-bit 8192-entry 2-port 2-bank RAM: 1
+  8-bit 4096-entry 2-port 2-bank RAM: 9
+  8-bit 256-entry 2-port 2-bank RAM: 9
+[Substream (spec: num)]
+  ('acc_rshift_round_frac', (32, 0, True, 32, 0, True)): 1
+  ('add_tree', (32, 0, True, 1)): 1
+  ('add_tree', (32, 0, True, 9)): 1
+  ('mul_rshift_round_clip', (32, 0, True, 32, 0, True, 64, 0, True, 8, 0, True, False)): 1
+  ('mul_rshift_round_madd', (8, 0, True, 8, 0, True, 16, 0, True)): 9
+[Stream (spec: num)]
+  (((<class 'nngen.operator.conv2d.conv2d'>, <dtype int8>, <dtype int8>, <dtype int32>, <dtype int32>), <dtype int8>, 1), 3, 3, False, None, <dtype int32>, 1, 1, 1, 1, 9, 9): 1
+  (((<class 'nngen.operator.conv2d.conv2d'>, <dtype int8>, <dtype int8>, <dtype int32>, <dtype int32>), <dtype int8>, 1), 1, 1, False, None, <dtype int32>, 1, 1, 1, 1, 1, 1): 1
+  ((((<class 'nngen.operator.depthwise_conv2d.depthwise_conv2d'>, <dtype int8>, <dtype int8>, <dtype int32>, <dtype int32>), <dtype int8>, 1), 3, 3, 1), True, True, <class 'nngen.operator.relu.relu6'>, False, <dtype int32>): 1
+  ((<class 'nngen.operator.normalize.scaled_add'>, <dtype int8>, <dtype int8>), <dtype int8>, 1): 1
+  ((<class 'nngen.operator.upsampling2d.upsampling2d'>, ((<class 'nngen.operator.normalize.scaled_add'>, <dtype int8>, <dtype int8>), <dtype int8>, 1)), <dtype int8>, 1): 1
+[State IDs in main_fsm]
+  (3, 4, 'act', 'None')
+  (12, 14, '/stem/stem.0/Conv', 'control_conv2d_63')
+  (22, 24, '/enc2/enc2.0/conv/conv.0/conv.0.0/Conv', 'control_conv2d_66')
+  (32, 34, '/enc2/enc2.0/conv/conv.1/conv.1.0/Conv', 'control_depthwise_conv2d_71')
+  (42, 44, '/enc2/enc2.0/conv/conv.2/conv.2.0/Conv', 'control_conv2d_66')
+  (52, 54, '/enc2/enc2.1/conv/conv.0/conv.0.0/Conv', 'control_conv2d_66')
+  (62, 64, '/enc2/enc2.1/conv/conv.1/conv.1.0/Conv', 'control_depthwise_conv2d_71')
+  (72, 74, '/enc2/enc2.1/conv/conv.2/conv.2.0/Conv', 'control_conv2d_66')
+  (79, 81, None, 'control_scaled_add_83')
+  (89, 91, '/enc3/enc3.0/conv/conv.0/conv.0.0/Conv', 'control_conv2d_66')
+  (99, 101, '/enc3/enc3.0/conv/conv.1/conv.1.0/Conv', 'control_depthwise_conv2d_71')
+  (109, 111, '/enc3/enc3.0/conv/conv.2/conv.2.0/Conv', 'control_conv2d_66')
+  (119, 121, '/enc3/enc3.1/conv/conv.0/conv.0.0/Conv', 'control_conv2d_66')
+  (129, 131, '/enc3/enc3.1/conv/conv.1/conv.1.0/Conv', 'control_depthwise_conv2d_71')
+  (139, 141, '/enc3/enc3.1/conv/conv.2/conv.2.0/Conv', 'control_conv2d_66')
+  (147, 149, '/up/Resize', 'control_upsampling2d_103')
+  (157, 159, '/dec3/dec3.0/Conv', 'control_conv2d_63')
+  (165, 167, '/up_1/Resize', 'control_upsampling2d_103')
+  (175, 177, '/dec2/dec2.0/Conv', 'control_conv2d_63')
+  (183, 185, '/up_2/Resize', 'control_upsampling2d_103')
+  (193, 195, '/dec1/dec1.0/Conv', 'control_conv2d_63')
+  (203, 205, '/head/Conv', 'control_conv2d_63')
+[Control (name (# states: num))]
+  main_fsm (# states: 211)
+  control_conv2d_63 (# states: 35)
+  control_conv2d_66 (# states: 29)
+  control_depthwise_conv2d_71 (# states: 45)
+  control_scaled_add_83 (# states: 32)
+  control_upsampling2d_103 (# states: 33)
+[Register Map]
+    0 (R ): header0 (default: 0x00000000)
+    4 (R ): header1 (default: 0x00000000)
+    8 (R ): header2 (default: 0x00000000)
+   12 (R ): header3 (default: 0x00000000)
+   16 ( W): Start (set '1' to run)
+   20 (R ): Busy (returns '1' when running)
+   24 ( W): Reset (set '1' to initialize internal logic)
+   28 (R ): Opcode from extern objects to SW (returns '0' when idle)
+   32 ( W): Resume extern objects (set '1' to resume)
+   36 (R ): Interrupt Status Register
+   40 ( W): Interrupt Enable Register
+   44 ( W): Interrupt Acknowledge Register
+   48 (R ): State Counter
+   52 ( W): Count Target
+   56 ( W): Count Divider
+   60 (  ): Reserved ...
+  120 (  ): ... Reserved
+  124 (R ): Address space amount
+  128 (RW): Global address offset (default: 0)
+  132 (RW): Address of temporal storages (size: 1576KB)
+  136 (RW): Address of output (conv2d) '/head/Conv' (size: 64KB, dtype: int8, shape: (1, 128, 128, 3), alignment: 2 words (2 bytes)), aligned shape: (1, 128, 128, 4)
+  140 (RW): Address of placeholder 'act' (size: 64KB, dtype: int8, shape: (1, 128, 128, 4), alignment: 2 words (2 bytes)), aligned shape: (1, 128, 128, 4)
+  144 (RW): Address of variables 'onnx::Conv_188', 'onnx::Conv_189', 'onnx_/stem/stem.0/Conv_conv.scale', 'onnx::Conv_191', 'onnx::Conv_192', 'onnx_/enc2/enc2.0/conv/conv.0/conv.0.0/Conv_conv.scale', 'onnx_/enc2/enc2.0/conv/conv.1/conv.1.0/Conv_dwconv.filter', 'onnx_/enc2/enc2.0/conv/conv.1/conv.1.0/Conv_dwconv.bias', 'onnx_/enc2/enc2.0/conv/conv.1/conv.1.0/Conv_dwconv.scale', 'onnx::Conv_197', 'onnx::Conv_198', 'onnx_/enc2/enc2.0/conv/conv.2/conv.2.0/Conv_conv.scale', 'onnx::Conv_200', 'onnx::Conv_201', 'onnx_/enc2/enc2.1/conv/conv.0/conv.0.0/Conv_conv.scale', 'onnx_/enc2/enc2.1/conv/conv.1/conv.1.0/Conv_dwconv.filter', 'onnx_/enc2/enc2.1/conv/conv.1/conv.1.0/Conv_dwconv.bias', 'onnx_/enc2/enc2.1/conv/conv.1/conv.1.0/Conv_dwconv.scale', 'onnx::Conv_206', 'onnx::Conv_207', 'onnx_/enc2/enc2.1/conv/conv.2/conv.2.0/Conv_conv.scale', 'onnx::Conv_209', 'onnx::Conv_210', 'onnx_/enc3/enc3.0/conv/conv.0/conv.0.0/Conv_conv.scale', 'onnx_/enc3/enc3.0/conv/conv.1/conv.1.0/Conv_dwconv.filter', 'onnx_/enc3/enc3.0/conv/conv.1/conv.1.0/Conv_dwconv.bias', 'onnx_/enc3/enc3.0/conv/conv.1/conv.1.0/Conv_dwconv.scale', 'onnx::Conv_215', 'onnx::Conv_216', 'onnx_/enc3/enc3.0/conv/conv.2/conv.2.0/Conv_conv.scale', 'onnx::Conv_218', 'onnx::Conv_219', 'onnx_/enc3/enc3.1/conv/conv.0/conv.0.0/Conv_conv.scale', 'onnx_/enc3/enc3.1/conv/conv.1/conv.1.0/Conv_dwconv.filter', 'onnx_/enc3/enc3.1/conv/conv.1/conv.1.0/Conv_dwconv.bias', 'onnx_/enc3/enc3.1/conv/conv.1/conv.1.0/Conv_dwconv.scale', 'onnx::Conv_224', 'onnx::Conv_225', 'onnx_/enc3/enc3.1/conv/conv.2/conv.2.0/Conv_conv.scale', 'onnx::Conv_227', 'onnx::Conv_228', 'onnx_/dec3/dec3.0/Conv_conv.scale', 'onnx::Conv_230', 'onnx::Conv_231', 'onnx_/dec2/dec2.0/Conv_conv.scale', 'onnx::Conv_233', 'onnx::Conv_234', 'onnx_/dec1/dec1.0/Conv_conv.scale', 'head.weight', 'head.bias', 'onnx_/head/Conv_conv.scale' (size: 44KB)
+[Default Memory Map (start - end)] (entire range: [0 - 1789183], size: 1748KB)
+  [      0 -   65535]: output (conv2d) '/head/Conv' (size: 64KB, dtype: int8, shape: (1, 128, 128, 3), alignment: 2 words (2 bytes)), aligned shape: (1, 128, 128, 4)
+  [  65536 -  131071]: placeholder 'act' (size: 64KB, dtype: int8, shape: (1, 128, 128, 4), alignment: 2 words (2 bytes)), aligned shape: (1, 128, 128, 4)
+  [ 131072 -  131647]: variable 'onnx::Conv_188' (size: 576B, dtype: int8, shape: (16, 3, 3, 4), alignment: 2 words (2 bytes)), aligned shape: (16, 3, 3, 4)
+  [ 131648 -  131711]: variable 'onnx::Conv_189' (size: 64B, dtype: int32, shape: (16,), alignment: 1 words (4 bytes)), aligned shape: (16,)
+  [ 131712 -  131775]: variable 'onnx_/stem/stem.0/Conv_conv.scale' (size: 64B, dtype: int32, shape: (1,), alignment: 1 words (4 bytes)), aligned shape: (1,)
+  [ 131776 -  132799]: variable 'onnx::Conv_191' (size: 1KB, dtype: int8, shape: (64, 1, 1, 16), alignment: 2 words (2 bytes)), aligned shape: (64, 1, 1, 16)
+  [ 132800 -  133055]: variable 'onnx::Conv_192' (size: 256B, dtype: int32, shape: (64,), alignment: 1 words (4 bytes)), aligned shape: (64,)
+  [ 133056 -  133119]: variable 'onnx_/enc2/enc2.0/conv/conv.0/conv.0.0/Conv_conv.scale' (size: 64B, dtype: int32, shape: (1,), alignment: 1 words (4 bytes)), aligned shape: (1,)
+  [ 133120 -  133695]: variable 'onnx_/enc2/enc2.0/conv/conv.1/conv.1.0/Conv_dwconv.filter' (size: 576B, dtype: int8, shape: (3, 3, 64), alignment: 2 words (2 bytes)), aligned shape: (3, 3, 64)
+  [ 133696 -  133951]: variable 'onnx_/enc2/enc2.0/conv/conv.1/conv.1.0/Conv_dwconv.bias' (size: 256B, dtype: int32, shape: (64,), alignment: 1 words (4 bytes)), aligned shape: (64,)
+  [ 133952 -  134207]: variable 'onnx_/enc2/enc2.0/conv/conv.1/conv.1.0/Conv_dwconv.scale' (size: 256B, dtype: int32, shape: (64,), alignment: 1 words (4 bytes)), aligned shape: (64,)
+  [ 134208 -  135743]: variable 'onnx::Conv_197' (size: 2KB, dtype: int8, shape: (24, 1, 1, 64), alignment: 2 words (2 bytes)), aligned shape: (24, 1, 1, 64)
+  [ 135744 -  135871]: variable 'onnx::Conv_198' (size: 128B, dtype: int32, shape: (24,), alignment: 1 words (4 bytes)), aligned shape: (24,)
+  [ 135872 -  135935]: variable 'onnx_/enc2/enc2.0/conv/conv.2/conv.2.0/Conv_conv.scale' (size: 64B, dtype: int32, shape: (1,), alignment: 1 words (4 bytes)), aligned shape: (1,)
+  [ 135936 -  138239]: variable 'onnx::Conv_200' (size: 3KB, dtype: int8, shape: (96, 1, 1, 24), alignment: 2 words (2 bytes)), aligned shape: (96, 1, 1, 24)
+  [ 138240 -  138623]: variable 'onnx::Conv_201' (size: 384B, dtype: int32, shape: (96,), alignment: 1 words (4 bytes)), aligned shape: (96,)
+  [ 138624 -  138687]: variable 'onnx_/enc2/enc2.1/conv/conv.0/conv.0.0/Conv_conv.scale' (size: 64B, dtype: int32, shape: (1,), alignment: 1 words (4 bytes)), aligned shape: (1,)
+  [ 138688 -  139583]: variable 'onnx_/enc2/enc2.1/conv/conv.1/conv.1.0/Conv_dwconv.filter' (size: 896B, dtype: int8, shape: (3, 3, 96), alignment: 2 words (2 bytes)), aligned shape: (3, 3, 96)
+  [ 139584 -  139967]: variable 'onnx_/enc2/enc2.1/conv/conv.1/conv.1.0/Conv_dwconv.bias' (size: 384B, dtype: int32, shape: (96,), alignment: 1 words (4 bytes)), aligned shape: (96,)
+  [ 139968 -  140351]: variable 'onnx_/enc2/enc2.1/conv/conv.1/conv.1.0/Conv_dwconv.scale' (size: 384B, dtype: int32, shape: (96,), alignment: 1 words (4 bytes)), aligned shape: (96,)
+  [ 140352 -  142655]: variable 'onnx::Conv_206' (size: 3KB, dtype: int8, shape: (24, 1, 1, 96), alignment: 2 words (2 bytes)), aligned shape: (24, 1, 1, 96)
+  [ 142656 -  142783]: variable 'onnx::Conv_207' (size: 128B, dtype: int32, shape: (24,), alignment: 1 words (4 bytes)), aligned shape: (24,)
+  [ 142784 -  142847]: variable 'onnx_/enc2/enc2.1/conv/conv.2/conv.2.0/Conv_conv.scale' (size: 64B, dtype: int32, shape: (1,), alignment: 1 words (4 bytes)), aligned shape: (1,)
+  [ 142848 -  145151]: variable 'onnx::Conv_209' (size: 3KB, dtype: int8, shape: (96, 1, 1, 24), alignment: 2 words (2 bytes)), aligned shape: (96, 1, 1, 24)
+  [ 145152 -  145535]: variable 'onnx::Conv_210' (size: 384B, dtype: int32, shape: (96,), alignment: 1 words (4 bytes)), aligned shape: (96,)
+  [ 145536 -  145599]: variable 'onnx_/enc3/enc3.0/conv/conv.0/conv.0.0/Conv_conv.scale' (size: 64B, dtype: int32, shape: (1,), alignment: 1 words (4 bytes)), aligned shape: (1,)
+  [ 145600 -  146495]: variable 'onnx_/enc3/enc3.0/conv/conv.1/conv.1.0/Conv_dwconv.filter' (size: 896B, dtype: int8, shape: (3, 3, 96), alignment: 2 words (2 bytes)), aligned shape: (3, 3, 96)
+  [ 146496 -  146879]: variable 'onnx_/enc3/enc3.0/conv/conv.1/conv.1.0/Conv_dwconv.bias' (size: 384B, dtype: int32, shape: (96,), alignment: 1 words (4 bytes)), aligned shape: (96,)
+  [ 146880 -  147263]: variable 'onnx_/enc3/enc3.0/conv/conv.1/conv.1.0/Conv_dwconv.scale' (size: 384B, dtype: int32, shape: (96,), alignment: 1 words (4 bytes)), aligned shape: (96,)
+  [ 147264 -  150335]: variable 'onnx::Conv_215' (size: 3KB, dtype: int8, shape: (32, 1, 1, 96), alignment: 2 words (2 bytes)), aligned shape: (32, 1, 1, 96)
+  [ 150336 -  150463]: variable 'onnx::Conv_216' (size: 128B, dtype: int32, shape: (32,), alignment: 1 words (4 bytes)), aligned shape: (32,)
+  [ 150464 -  150527]: variable 'onnx_/enc3/enc3.0/conv/conv.2/conv.2.0/Conv_conv.scale' (size: 64B, dtype: int32, shape: (1,), alignment: 1 words (4 bytes)), aligned shape: (1,)
+  [ 150528 -  154623]: variable 'onnx::Conv_218' (size: 4KB, dtype: int8, shape: (128, 1, 1, 32), alignment: 2 words (2 bytes)), aligned shape: (128, 1, 1, 32)
+  [ 154624 -  155135]: variable 'onnx::Conv_219' (size: 512B, dtype: int32, shape: (128,), alignment: 1 words (4 bytes)), aligned shape: (128,)
+  [ 155136 -  155199]: variable 'onnx_/enc3/enc3.1/conv/conv.0/conv.0.0/Conv_conv.scale' (size: 64B, dtype: int32, shape: (1,), alignment: 1 words (4 bytes)), aligned shape: (1,)
+  [ 155200 -  156351]: variable 'onnx_/enc3/enc3.1/conv/conv.1/conv.1.0/Conv_dwconv.filter' (size: 2KB, dtype: int8, shape: (3, 3, 128), alignment: 2 words (2 bytes)), aligned shape: (3, 3, 128)
+  [ 156352 -  156863]: variable 'onnx_/enc3/enc3.1/conv/conv.1/conv.1.0/Conv_dwconv.bias' (size: 512B, dtype: int32, shape: (128,), alignment: 1 words (4 bytes)), aligned shape: (128,)
+  [ 156864 -  157375]: variable 'onnx_/enc3/enc3.1/conv/conv.1/conv.1.0/Conv_dwconv.scale' (size: 512B, dtype: int32, shape: (128,), alignment: 1 words (4 bytes)), aligned shape: (128,)
+  [ 157376 -  161471]: variable 'onnx::Conv_224' (size: 4KB, dtype: int8, shape: (32, 1, 1, 128), alignment: 2 words (2 bytes)), aligned shape: (32, 1, 1, 128)
+  [ 161472 -  161599]: variable 'onnx::Conv_225' (size: 128B, dtype: int32, shape: (32,), alignment: 1 words (4 bytes)), aligned shape: (32,)
+  [ 161600 -  161663]: variable 'onnx_/enc3/enc3.1/conv/conv.2/conv.2.0/Conv_conv.scale' (size: 64B, dtype: int32, shape: (1,), alignment: 1 words (4 bytes)), aligned shape: (1,)
+  [ 161664 -  168575]: variable 'onnx::Conv_227' (size: 7KB, dtype: int8, shape: (24, 3, 3, 32), alignment: 2 words (2 bytes)), aligned shape: (24, 3, 3, 32)
+  [ 168576 -  168703]: variable 'onnx::Conv_228' (size: 128B, dtype: int32, shape: (24,), alignment: 1 words (4 bytes)), aligned shape: (24,)
+  [ 168704 -  168767]: variable 'onnx_/dec3/dec3.0/Conv_conv.scale' (size: 64B, dtype: int32, shape: (1,), alignment: 1 words (4 bytes)), aligned shape: (1,)
+  [ 168768 -  172223]: variable 'onnx::Conv_230' (size: 4KB, dtype: int8, shape: (16, 3, 3, 24), alignment: 2 words (2 bytes)), aligned shape: (16, 3, 3, 24)
+  [ 172224 -  172287]: variable 'onnx::Conv_231' (size: 64B, dtype: int32, shape: (16,), alignment: 1 words (4 bytes)), aligned shape: (16,)
+  [ 172288 -  172351]: variable 'onnx_/dec2/dec2.0/Conv_conv.scale' (size: 64B, dtype: int32, shape: (1,), alignment: 1 words (4 bytes)), aligned shape: (1,)
+  [ 172352 -  174655]: variable 'onnx::Conv_233' (size: 3KB, dtype: int8, shape: (16, 3, 3, 16), alignment: 2 words (2 bytes)), aligned shape: (16, 3, 3, 16)
+  [ 174656 -  174719]: variable 'onnx::Conv_234' (size: 64B, dtype: int32, shape: (16,), alignment: 1 words (4 bytes)), aligned shape: (16,)
+  [ 174720 -  174783]: variable 'onnx_/dec1/dec1.0/Conv_conv.scale' (size: 64B, dtype: int32, shape: (1,), alignment: 1 words (4 bytes)), aligned shape: (1,)
+  [ 174784 -  175231]: variable 'head.weight' (size: 448B, dtype: int8, shape: (3, 3, 3, 16), alignment: 2 words (2 bytes)), aligned shape: (3, 3, 3, 16)
+  [ 175232 -  175295]: variable 'head.bias' (size: 64B, dtype: int32, shape: (3,), alignment: 1 words (4 bytes)), aligned shape: (3,)
+  [ 175296 -  175359]: variable 'onnx_/head/Conv_conv.scale' (size: 64B, dtype: int32, shape: (1,), alignment: 1 words (4 bytes)), aligned shape: (1,)
+  [ 175360 - 1789183]: temporal storages (size: 1576KB)
