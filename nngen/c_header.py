@@ -256,8 +256,11 @@ def export_c_header(objs, name, filename=None, config=None, chunk_size=None,
             w('#define %s_%s_ALIGNED_%s      %d  /* innermost dim padded to word alignment */' %
               (P, tag, dims[-1], ash[-1]))
             w('#define %s_%s_DTYPE_BITS     %d  /* %s */' % (P, tag, r['dtype_width'], r['dtype_str']))
-            w('#define %s_%s_SCALE_FACTOR   %.9gf  /* real = int / SCALE_FACTOR */' %
-              (P, tag, r['scale_factor']))
+            sf = '%.9g' % r['scale_factor']
+            if not any(ch in sf for ch in '.e'):
+                sf += '.0'
+            w('#define %s_%s_SCALE_FACTOR   %sf  /* real = int / SCALE_FACTOR */' %
+              (P, tag, sf))
             if r['layout'] is not None:
                 w('/* layout: %s, element (n,h,w,c) at byte offset ((n*H+h)*W+w)*ALIGNED_C+c (int8) */'
                   % ''.join(r['layout']))

@@ -14,9 +14,10 @@ exporter) -> nngen -> int8 quantization -> Verilog/IP-XACT -> C header + driver 
 image -> optional full RTL simulation (Verilator) compared bit-exactly with ng.eval.
 
 Usage:
-  python style_net_nngen.py --size 32 --par 1 --sim verilator
-  python style_net_nngen.py --size 128 --par 1 --sim none        # IP + header only
-  python style_net_nngen.py --size 128 --axi 16 --sim none
+  python style_net_nngen.py --size 32 --sim verilator           # axi16, ~25 s RTL sim
+  python style_net_nngen.py --size 128 --sim none                # IP + header only
+  python style_net_nngen.py --size 128 --axi 32 --config min_onchip_ram_capacity=4096
+  ./make_release.sh                                              # refresh ip_128x128/
 """
 
 from __future__ import absolute_import
@@ -45,13 +46,16 @@ import veriloggen.types.axi as axi  # noqa: E402
 p = argparse.ArgumentParser()
 p.add_argument('--size', type=int, default=32, help='input/output H = W')
 p.add_argument('--par', type=int, default=1, help='parallelism of conv/depthwise/upsample/add')
-p.add_argument('--axi', type=int, default=32, help='AXI master data width (32 or 16)')
+p.add_argument('--axi', type=int, default=16,
+               help='AXI master data width (16 = Efinix default: fewer/wider-packed RAM10K, 32 also works)')
 p.add_argument('--sim', default='verilator', help='verilator / iverilog / none')
 p.add_argument('--steps', type=int, default=300, help='training steps (0 = random weights)')
 p.add_argument('--out_ch', type=int, default=3)
 p.add_argument('--outdir', default=None)
 p.add_argument('--name', default='style_net')
 p.add_argument('--seed', type=int, default=0)
+p.add_argument('--config', action='append', default=[],
+               help='extra nngen config KEY=VALUE (python literal), e.g. min_onchip_ram_capacity=1024')
 args = p.parse_args()
 
 torch.manual_seed(args.seed)
@@ -211,7 +215,15 @@ vact = np.clip(np.round(np.transpose(test_imgs[0:1], (0, 2, 3, 1)) * act_scale_f
 vout = ng.eval([out], act=vact)[0]
 
 # ------------------------------------------------------------------ HDL + driver files
-config = {'maxi_datawidth': axi_datawidth, 'offchipram_chunk_bytes': chunk_size}
+config = {'maxi_datawidth': axi_datawidth, 'offchipram_chunk_bytes': chunk_size,
+          # small on-chip buffers pack best into Ti60 RAM10K true-dual-port shapes
+          # (128x128 axi16: 70 blocks with 1024 vs 90 with the nngen default 4096)
+          'min_onchip_ram_capacity': 1024}
+import ast
+for kv in args.config:
+    k, v = kv.split('=', 1)
+    config[k] = ast.literal_eval(v)
+print('# nngen config overrides:', config)
 t0 = time.time()
 # generate ONCE (a second to_* call on the same graph sees already-assigned addresses);
 # the IP-XACT package lands in <outdir>/<name>_v1_0, the plain Verilog is copied next to it
