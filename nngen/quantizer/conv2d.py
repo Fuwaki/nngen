@@ -115,6 +115,18 @@ def conv2d(visitor, node):
             init_rshift_sum=0,
             init_rshift_out=init_rshift_out)
 
+        if _is_relu6(node.act_func):
+            # values above 6.0 are clamped anyway: it is enough that 6.0 fits in the range
+            base_sf = input.scale_factor * filter_scale_factor * scale_scale_factor
+            for v in (node.cshamt_mul, node.cshamt_sum, node.cshamt_out):
+                if v is not None:
+                    base_sf /= 2 ** v
+            base_sf /= 2 ** (q_rshift_mul + q_rshift_sum)
+            p_th = (2 ** (node.dtype.width - 1) - 1 if node.dtype.signed
+                    else 2 ** node.dtype.width - 1)
+            r_six = max(int(math.ceil(math.log(max(6.0 * base_sf / p_th, 1e-30), 2))), 0)
+            q_rshift_out = min(q_rshift_out, r_six)
+
         total_rshift = 0
 
         if node.cshamt_mul is not None:
@@ -141,6 +153,13 @@ def conv2d(visitor, node):
         node.scale_factor = (input.scale_factor * filter_scale_factor *
                              scale_scale_factor / (2 ** total_rshift))
 
+        if _is_relu6(node.act_func):
+            # final result with the real relu6 clamp (depends on node.scale_factor)
+            visitor.memo[id(node)] = try_rshift(node, input.eval(visitor.memo, visitor.input_dict),
+                                                q_filter_value, q_bias_value, q_scale_value,
+                                                node.cshamt_mul or 0, node.cshamt_sum or 0,
+                                                node.cshamt_out or 0)
+
     else:
         node.scale_factor = (input.scale_factor * filter_scale_factor *
                              scale_scale_factor)
@@ -156,14 +175,23 @@ def find_optimal_rshift(visitor, node, filter, bias, scale,
 
     input = node.args[0].eval(visitor.memo, visitor.input_dict)
 
+    # per-operator override, e.g. op.quant_range_rate = 0.9 for an image output layer
+    range_rate = getattr(node, 'quant_range_rate', None) or range_rate
+    allowed_rate = getattr(node, 'quant_allowed_rate', None) or allowed_rate
+
     if node.dtype.signed:
         _range = round((2 ** (node.dtype.width - 1)) * range_rate)
     else:
         _range = round((2 ** node.dtype.width) * range_rate)
 
+    # The relu6 clamp (round(6 * scale_factor)) depends on the scale factor that is being
+    # searched here; node.scale_factor is stale at this point. Search on plain relu output.
+    act_func_override = _ReluProxy() if _is_relu6(node.act_func) else None
+
     while True:
         rslt = try_rshift(node, input, filter, bias, scale,
-                          rshift_mul, rshift_sum, rshift_out)
+                          rshift_mul, rshift_sum, rshift_out,
+                          act_func_override=act_func_override)
         neg_overflow = np.where(rslt <= - _range,
                                 np.ones_like(rslt), np.zeros_like(rslt))
         pos_overflow = np.where(rslt >= _range,
@@ -181,8 +209,18 @@ def find_optimal_rshift(visitor, node, filter, bias, scale,
     return rshift_mul, rshift_sum, rshift_out
 
 
+class _ReluProxy(object):
+    def get_act_func(self):
+        return lambda x: np.maximum(x, 0)
+
+
+def _is_relu6(act_func):
+    from nngen.operator.relu import relu6
+    return act_func is not None and isinstance(act_func, relu6)
+
+
 def try_rshift(node, input, filter, bias, scale,
-               rshift_mul, rshift_sum, rshift_out):
+               rshift_mul, rshift_sum, rshift_out, act_func_override=None):
 
     import nngen.verify as verify
 
@@ -198,7 +236,7 @@ def try_rshift(node, input, filter, bias, scale,
     kwargs['rshift_mul'] = rshift_mul
     kwargs['rshift_sum'] = rshift_sum
     kwargs['rshift_out'] = rshift_out
-    kwargs['act_func'] = node.act_func
+    kwargs['act_func'] = node.act_func if act_func_override is None else act_func_override
     kwargs['padding'] = node.padding
     kwargs['dtype'] = node.dtype
     kwargs['mul_dtype'] = node.mul_dtype

@@ -19,6 +19,18 @@ from . import dtype_list
 _object_counter = 0
 
 
+
+def _control_param_fits(value, width):
+    """True if an int control param fits in `width` bits (unsigned or two's complement)."""
+    if isinstance(value, (bool, np.integer)):
+        value = int(value)
+    if not isinstance(value, int):
+        return vg.get_width(value) <= width
+    if value >= 0:
+        return value.bit_length() <= width
+    return (-value - 1).bit_length() < width
+
+
 class _Node(object):
 
     def __init__(self):
@@ -931,20 +943,20 @@ class _Operator(_Numeric):
 
                     for r, v in zip(reg, value):
                         width = (r.width if r.width is not None else 1)
-                        if vg.get_width(v) > width:
+                        if not _control_param_fits(v, width):
                             raise ValueError(
                                 'control_param_value is too wide.')
 
-                        group_params.append(vg.Int(int(v), width, base=16))
+                        group_params.append(vg.Int(int(v) & ((1 << width) - 1), width, base=16))
 
                     cat_params.append(vg.Cat(*reversed(group_params)))
 
                 else:
                     width = (reg.width if reg.width is not None else 1)
-                    if vg.get_width(value) > width:
+                    if not _control_param_fits(value, width):
                         raise ValueError('control_param_value is too large.')
 
-                    cat_params.append(vg.Int(int(value), width, base=16))
+                    cat_params.append(vg.Int(int(value) & ((1 << width) - 1), width, base=16))
 
             if not cat_params:
                 continue
@@ -968,8 +980,10 @@ class _Operator(_Numeric):
                                              datawidth, addrwidth,
                                              numports, initvals, nocheck_initvals=True,
                                              ram_style=ram_style)
-        for i in range(numports):
-            self.control_param_ram.disable_write(i)
+        # newer veriloggen RAMs default to wenable=0 and have no disable_write()
+        if hasattr(self.control_param_ram, 'disable_write'):
+            for i in range(numports):
+                self.control_param_ram.disable_write(i)
 
     def get_total_control_param_width(self):
         width = 0

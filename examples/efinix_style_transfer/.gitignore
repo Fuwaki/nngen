@@ -1,0 +1,5 @@
+build_*/
+__pycache__/
+*.out
+log_*.txt
+style_net_v1_0/

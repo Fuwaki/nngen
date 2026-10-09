@@ -3,6 +3,7 @@ from __future__ import print_function
 from __future__ import division
 
 import collections
+import numpy as np
 
 import nngen.storage as storage
 import nngen.dtype_list as dtype_list
@@ -59,6 +60,7 @@ func_map = {
     'Reshape': reshape.Reshape,
     'Flatten': flatten.Flatten,
     'Upsample': upsample.Upsample,
+    'Resize': upsample.Resize,
     'Transpose': transpose.Transpose,
     'Concat': concat.Concat,
     'Squeeze': squeeze.Squeeze,
@@ -342,6 +344,12 @@ def from_onnx(filename,
         elif name in constants:
             outputs[name] = constants[name]
 
+    # raw ndarrays (empty tensors) are internal only
+    variables = collections.OrderedDict(
+        [(k, v) for k, v in variables.items() if not isinstance(v, np.ndarray)])
+    constants = collections.OrderedDict(
+        [(k, v) for k, v in constants.items() if not isinstance(v, np.ndarray)])
+
     return outputs, placeholders, variables, constants, operators
 
 
@@ -383,6 +391,10 @@ def _to_variables(input_nodes, output_nodes, variable_values, constant_values,
             dtype = default_variable_dtype
 
         shape = node.shape
+        if node.size == 0:
+            # empty initializers (e.g. Resize 'roi') are kept as raw ndarrays
+            variables[name] = node
+            continue
         v = storage.variable(dtype=dtype, shape=shape, name=name)
         v.set_value(node)
         variables[name] = v
@@ -404,6 +416,10 @@ def _to_constants(input_nodes, output_nodes, variable_values, constant_values,
             dtype = default_constant_dtype
 
         shape = node.shape
+        if node.size == 0:
+            # empty tensors (e.g. Resize 'roi' in opset 11) are kept as raw ndarrays
+            constants[name] = node
+            continue
         c = storage.constant(value=node,
                              dtype=dtype, shape=shape, name=name)
         constants[name] = c

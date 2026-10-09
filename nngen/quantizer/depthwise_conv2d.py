@@ -101,6 +101,10 @@ def find_optimal_rshift(visitor, node, filter, bias, scale, init_rshift,
 
     input = node.args[0].eval(visitor.memo, visitor.input_dict)
 
+    # per-operator override, e.g. op.quant_range_rate = 0.9 for an image output layer
+    range_rate = getattr(node, 'quant_range_rate', None) or range_rate
+    allowed_rate = getattr(node, 'quant_allowed_rate', None) or allowed_rate
+
     if node.dtype.signed:
         _range = round((2 ** (node.dtype.width - 1)) * range_rate)
     else:
